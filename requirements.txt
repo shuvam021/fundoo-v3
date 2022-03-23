@@ -5,5 +5,6 @@ django-dotenv
 django-redis
 psycopg2-binary
 djangorestframework-simplejwt
-# drf-yasg
-# Celery
+PyJWT
+drf-yasg
+Celery

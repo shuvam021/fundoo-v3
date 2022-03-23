@@ -11,9 +11,6 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
-        print('============================')
-        print(self)
-        print('============================')
         password = validated_data.pop('password')
         instance = self.Meta.model(**validated_data)
         if password is not None:
@@ -26,11 +23,7 @@ class NoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Note
         fields = ('id', 'title', 'description', 'user')
-        read_only_fields = ('id', 'is_verified')
-
-    # def create(self, validated_data):
-    #     print(self.request)
-    #
+        read_only_fields = ('id',)
 
 
 class LabelSerializer(serializers.ModelSerializer):

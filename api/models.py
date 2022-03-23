@@ -1,5 +1,12 @@
+import logging
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models.signals import post_save
+
+from api.tasks import task_send_verify_user_email
+
+logger = logging.getLevelName(__name__)
 
 
 # Create your models here.
@@ -11,12 +18,23 @@ class User(AbstractUser):
     username = models.CharField(max_length=255, blank=True, null=True)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ('username', 'password', )
+    REQUIRED_FIELDS = ('username', 'password',)
 
     class Meta:
         db_table = 'user'
         verbose_name = 'user'
         verbose_name_plural = 'users'
+
+
+def user_post_save(sender, instance, created, *args, **kwargs):
+    if created:
+        try:
+            task_send_verify_user_email.delay(instance.id, instance.email)
+        except Exception as e:
+            logger.exception(e)
+
+
+post_save.connect(user_post_save, sender=User)
 
 
 class Note(models.Model):
