@@ -1,0 +1,9 @@
+**/*.*
+
+venv/
+__pycache__/
+.vscode/
+.idea/
+
+!.gitignore
+!**/*[.py, .txt, .js, .css, .html, .json]

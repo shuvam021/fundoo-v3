@@ -1,0 +1,9 @@
+django>=4.0.0,<4.1.0
+djangorestframework
+django-cors-headers
+django-dotenv
+django-redis
+psycopg2-binary
+djangorestframework-simplejwt
+# drf-yasg
+# Celery
