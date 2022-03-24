@@ -4,7 +4,6 @@ from pathlib import Path
 
 from drf_yasg import openapi
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
@@ -16,7 +15,7 @@ SECRET_KEY = 'django-insecure-nc(1^!z$0%10o)x5)yar(m3noe$u)u5_+gf5l(mf9m(367m^k!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 INSTALLED_APPS = [
@@ -118,8 +117,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # email config
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'shuvamdas.shuv@gmail.com'
-EMAIL_HOST_PASSWORD = 'mwtuhbptlndmgqsz'
+EMAIL_HOST_USER = 'test.shuvam@gmail.com'
+EMAIL_HOST_PASSWORD = 'gxworetdbjjtqeif'
 EMAIL_USE_TLS = True
 
 # logging configuration
@@ -155,7 +154,8 @@ LOGGING = {
 AUTH_USER_MODEL = 'api.User'
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',)
+    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
+    'DEFAULT_AUTHENTICATION _CLASSES': ('api.authentication.JWTAuthentication',)
 }
 
 JWT_EXP_TIME = 60 * 60
@@ -194,8 +194,8 @@ SIMPLE_JWT = {
 
 SWAGGER_SETTINGS = {
     'DEFAULT_INFO': openapi.Info(
-        title="Snippets API",
-        default_version='v1',
+        title="Fun-to-do Note",
+        default_version='v3',
         description="Test description",
         terms_of_service="https://www.google.com/policies/terms/",
         contact=openapi.Contact(email="contact@snippets.local"),
@@ -220,3 +220,5 @@ CACHES = {
         'TIMEOUT': None,
     }
 }
+
+SITE_URI = 'http://localehost.8000'

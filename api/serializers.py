@@ -23,7 +23,7 @@ class NoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Note
         fields = ('id', 'title', 'description', 'user')
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'user')
 
 
 class LabelSerializer(serializers.ModelSerializer):
