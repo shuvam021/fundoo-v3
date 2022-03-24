@@ -4,6 +4,7 @@ from django.views.generic import TemplateView
 from drf_yasg.views import get_schema_view
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
+from . import views
 
 schema_view = get_schema_view(public=True, permission_classes=(AllowAny,))
 
@@ -16,4 +17,9 @@ urlpatterns = [
 
     path('api/', include('api.urls'), name='api'),
     path('docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+
+    # front-end
+    path('register/', views.RegistrationView.as_view(), name='temp-reg'),
+    path('login/', views.LoginView.as_view(), name='temp-login'),
+    path('logout/', views.logout_view, name='temp-logout'),
 ]
