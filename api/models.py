@@ -53,7 +53,7 @@ class Label(models.Model):
     """ORM for Label table"""
     title = models.CharField(max_length=255)
     color = models.CharField(max_length=50)
-    author = models.ForeignKey('api.User', on_delete=models.PROTECT)
+    author = models.ForeignKey('api.User', on_delete=models.CASCADE)
     note = models.ManyToManyField('api.Note')
 
     class Meta:

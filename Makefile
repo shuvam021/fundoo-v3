@@ -12,3 +12,6 @@ run-celery:
 
 clear-log:
 	truncate -s 0 .\projects.log
+
+test:
+	$(py) test

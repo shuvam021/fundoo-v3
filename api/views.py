@@ -7,6 +7,7 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework import viewsets
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAdminUser
 
@@ -127,7 +128,7 @@ class NoteViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        queryset = Note.objects.filter(user=user)
+        queryset = Note.objects.filter(user__id=user.id)
         return queryset
 
     def update_cache(self, user_id):
@@ -205,13 +206,16 @@ class LabelViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        queryset = Label.objects.filter(author=user)
+        queryset = Label.objects.filter(author__id=user.id)
         return queryset
 
     def list(self, request, *args, **kwargs):
         try:
-            serializer = self.get_serializer(self.get_queryset(), many=True)
-            return ReturnResponse(data=serializer.data)
+            data = self.get_queryset()
+            if data.exists():
+                serializer = self.get_serializer(data, many=True)
+                return ReturnResponse(data=serializer.data)
+            return ReturnResponse(message="No data found", status_code=status.HTTP_204_NO_CONTENT)
         except Exception as e:
             logger.exception(e)
             return ReturnResponse(message=str(e), status_code=status.HTTP_400_BAD_REQUEST)
