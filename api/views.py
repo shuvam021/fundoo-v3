@@ -15,7 +15,8 @@ from api.authentication import JWTAuthentication
 from api.models import Label, Note, User
 from api.serializers import LabelSerializer, NoteSerializer, UserSerializer
 from api.tasks import task_send_verify_user_email, task_send_forget_password_email
-from api.utils import decode_jwt_token, ReturnResponse
+from api.utils import decode_jwt_token, ReturnResponse, generate_jwt_token
+from rest_framework.reverse import reverse
 
 logger = logging.getLogger(__name__)
 
@@ -61,13 +62,15 @@ class AuthorisationViewSet(viewsets.ViewSet):
     def forget_password(self, request):
         try:
             user = get_object_or_404(User, email=request.data.get('email'))
+            print(reverse("auth-update-password"))
+            print(str(generate_jwt_token(user.id)))
             task_send_forget_password_email.delay(user.id, user.email)
             return ReturnResponse(status_code=status.HTTP_200_OK, message='message sent')
         except Exception as e:
             logger.exception(e)
             return ReturnResponse(status_code=status.HTTP_400_BAD_REQUEST, message=str(e))
 
-    @action(detail=False, methods=['post'], url_path='<str:token>/update_password/')
+    @action(detail=False, methods=['post'], url_path='<str:token>/update_password')
     def update_password(self, request, token=None):
         try:
             payload = decode_jwt_token(token)

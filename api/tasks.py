@@ -2,6 +2,7 @@ from celery import shared_task
 from django.conf import settings
 from django.core.mail import send_mail
 
+
 from api.utils import generate_jwt_token
 
 
@@ -12,7 +13,7 @@ def task_send_forget_password_email(user_id, email):
     body = f"Hii, {email}\n"
     body += f"use this link to change your password\n{endpoint}"
     send_mail(subject, body, settings.EMAIL_HOST_USER, [email], fail_silently=False)
-    return 'send_forget_password_task', endpoint
+    return 'send_forget_password_task'
 
 
 @shared_task
