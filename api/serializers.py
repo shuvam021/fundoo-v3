@@ -22,12 +22,26 @@ class UserSerializer(serializers.ModelSerializer):
 class NoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Note
-        fields = ('id', 'title', 'description', 'user')
+        fields = ('id', 'title', 'description', 'user', 'color', "is_archived")
+        read_only_fields = ('id',)
+
+
+class NoteArchivedSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Note
+        fields = ('id', "is_archived")
+        read_only_fields = ('id',)
+
+
+class NoteUpdateColorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Note
+        fields = ('id', "color")
         read_only_fields = ('id',)
 
 
 class LabelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Label
-        fields = ('id', 'title', 'color', 'author', 'note')
+        fields = ('id', 'title', 'color', 'author', "is_archived")
         read_only_fields = ('id', 'author')

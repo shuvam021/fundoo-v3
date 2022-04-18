@@ -7,16 +7,18 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework import viewsets
-from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAdminUser
+from rest_framework.reverse import reverse
 
 from api.authentication import JWTAuthentication
 from api.models import Label, Note, User
-from api.serializers import LabelSerializer, NoteSerializer, UserSerializer
+from api.serializers import (
+    LabelSerializer, NoteSerializer, UserSerializer,
+    NoteArchivedSerializer, NoteUpdateColorSerializer
+)
 from api.tasks import task_send_verify_user_email, task_send_forget_password_email
 from api.utils import decode_jwt_token, ReturnResponse, generate_jwt_token
-from rest_framework.reverse import reverse
 
 logger = logging.getLogger(__name__)
 
@@ -123,6 +125,66 @@ class UserViewSet(viewsets.ModelViewSet):
         except Exception as e:
             logger.exception(e)
             return ReturnResponse(message=str(e), status_code=400)
+
+
+class NoteArchivedViewSet(viewsets.ModelViewSet):
+    authentication_classes = (JWTAuthentication,)
+    serializer_class = NoteArchivedSerializer
+    http_method_names = ['put']
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = Note.objects.filter(user__id=user.id)
+        return queryset
+
+    def update_cache(self, user_id):
+        """Update cached memory"""
+        json_data = [{item.id: model_to_dict(item)} for item in self.get_queryset()]
+        cache.set(user_id, json_data)
+
+    def update(self, request, *args, **kwargs):
+        try:
+            pk = kwargs.get('pk')
+            note = get_object_or_404(Note, pk=pk)
+            serializer = self.get_serializer(note, data=request.data)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                self.update_cache(request.user.id)
+                return ReturnResponse(data=serializer.data, status_code=status.HTTP_200_OK)
+            return ReturnResponse(data=serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            logger.exception(e)
+            return ReturnResponse(message=str(e), status_code=status.HTTP_400_BAD_REQUEST)
+
+
+class NoteUpdateColorViewSet(viewsets.ModelViewSet):
+    authentication_classes = (JWTAuthentication,)
+    serializer_class = NoteUpdateColorSerializer
+    http_method_names = ['put']
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = Note.objects.filter(user__id=user.id)
+        return queryset
+
+    def update_cache(self, user_id):
+        """Update cached memory"""
+        json_data = [{item.id: model_to_dict(item)} for item in self.get_queryset()]
+        cache.set(user_id, json_data)
+
+    def update(self, request, *args, **kwargs):
+        try:
+            pk = kwargs.get('pk')
+            note = get_object_or_404(Note, pk=pk)
+            serializer = self.get_serializer(note, data=request.data)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                self.update_cache(request.user.id)
+                return ReturnResponse(data=serializer.data, status_code=status.HTTP_200_OK)
+            return ReturnResponse(data=serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            logger.exception(e)
+            return ReturnResponse(message=str(e), status_code=status.HTTP_400_BAD_REQUEST)
 
 
 class NoteViewSet(viewsets.ModelViewSet):

@@ -42,11 +42,14 @@ class Note(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
     user = models.ForeignKey('api.User', on_delete=models.CASCADE)
+    color = models.CharField(max_length=255, null=True, blank=True)
+    is_archived = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'note'
         verbose_name = 'note'
         verbose_name_plural = 'notes'
+        ordering = ['pk']
 
 
 class Label(models.Model):
@@ -54,7 +57,8 @@ class Label(models.Model):
     title = models.CharField(max_length=255)
     color = models.CharField(max_length=50)
     author = models.ForeignKey('api.User', on_delete=models.CASCADE)
-    note = models.ManyToManyField('api.Note')
+    is_archived = models.BooleanField(default=False)
+    # note = models.ManyToManyField('api.Note')
 
     class Meta:
         db_table = 'label'
